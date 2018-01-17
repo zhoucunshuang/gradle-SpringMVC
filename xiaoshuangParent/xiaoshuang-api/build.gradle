@@ -24,7 +24,8 @@ dependencies{
 	  	"org.activiti:activiti-spring:5.22.0",
 	  	"org.activiti:activiti-modeler:5.22.0",
 	  	"org.quartz-scheduler:quartz:2.2.1",
-	  	"org.activiti:activiti-diagram-rest:5.22.0"
+	  	"org.activiti:activiti-diagram-rest:5.22.0",
+	  	"org.projectlombok:lombok:1.16.20"
 	)
 }
 

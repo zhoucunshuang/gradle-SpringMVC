@@ -1,14 +1,4 @@
-
-/** 
- * @单位名称：合肥斡亿信息科技有限公司
- * @Copyright (c) 2018 All Rights Reserved.
- * @系统名称：微信平台
- * @工程名称：xiaoshuang-web
- * @文件名称: LoginController.java
- * @类路径: com.zcs.login.web.controller
- */
-
-		package com.zcs.login.web.controller;
+package com.zcs.login.web.controller;
 
 import java.io.IOException;
 
@@ -22,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 /** 
  *
  * @see
- * @author  cszhou@woyitech.com
+ * @author  zhoucunshuang@163.com
  * @date	2018年1月16日 下午4:37:36
  * @version
  * @desc    TODO
