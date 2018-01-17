@@ -37,8 +37,8 @@ jar {
 }
     
 task copyprop(type: Copy){
-	from 'src/main/java/com/zcs/mhub'
-	into 'build/classes/main/com/zcs/mhub'
+	from 'src/main/java/com/zcs'
+	into 'build/classes/main/com/zcs'
 	exclude '**/*.java';
 }
 	
