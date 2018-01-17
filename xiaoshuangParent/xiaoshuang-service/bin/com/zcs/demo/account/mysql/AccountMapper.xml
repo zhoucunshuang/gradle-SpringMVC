@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.woyi.main.account.dao.AccountMapper">
+  <resultMap id="BaseResultMap" type="com.zcs.account.domain.Account">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="parentid" jdbcType="VARCHAR" property="parentid" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="companyId" jdbcType="VARCHAR" property="companyId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, name, code, parentid, sort,companyId
+  </sql>
+  
+  <!-- 获取科目详情 -->
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select tal.name as parentName,ta.*
+  	from t_account  ta  
+  	left join t_account tal on ta.parentid = tal.id
+    where ta.id = #{id,jdbcType=VARCHAR}
+  </select>
+  <!-- 根据主键删除科目 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_account
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  
+  <!-- 插入报销科目 -->
+  <insert id="insert" parameterType="com.zcs.account.domain.Account">
+    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.String">
+      select UUID()
+    </selectKey>
+    insert into t_account (id, name, code, parentid, sort,companyId)
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, 
+      #{parentid,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER} ,#{companyId,jdbcType=VARCHAR})
+  </insert>
+  
+  <!-- 修改报销科目 -->
+  <update id="updateByPrimaryKeySelective" parameterType="com.zcs.account.domain.Account">
+    update t_account
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="code != null">
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+          parentid = #{parentid,jdbcType=VARCHAR},
+      <if test="sort != null">
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zcs.account.domain.Account">
+    update t_account
+    set name = #{name,jdbcType=VARCHAR},
+      code = #{code,jdbcType=VARCHAR},
+      parentid = #{parentid,jdbcType=VARCHAR},
+      sort = #{sort,jdbcType=INTEGER}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  <!-- 获得所有报销科目 -->
+  <select id="getAllAcounts" resultMap="BaseResultMap">
+  	select <include refid="Base_Column_List" />
+  	from t_account
+  	where 1=1 
+   <if test="companyId!=null &amp;&amp; companyId!=''">
+   		and companyId = #{companyId, jdbcType=VARCHAR}
+   </if>
+  	order by sort asc
+  </select>
+  
+   <!-- 根据parentid获得报销科目 -->
+  <select id="selectByParentId" resultMap="BaseResultMap" parameterType="com.zcs.account.domain.Account">
+  	select <include refid="Base_Column_List" />
+  	from t_account
+  	where 1=1 
+   <if test="account.companyId!=null &amp;&amp; account.companyId!=''">
+   		and companyId = #{account.companyId, jdbcType=VARCHAR}
+   </if>
+   <if test="account.id!=null &amp;&amp; account.id!=''">
+   		and parentid = #{account.id, jdbcType=VARCHAR}
+   </if>
+  	order by sort asc
+  </select>
+  
+   <!-- 根据name获得报销科目 -->
+  <select id="selectByName" resultMap="BaseResultMap" parameterType="com.zcs.account.domain.Account">
+  	select <include refid="Base_Column_List" />
+  	from t_account
+  	where 1=1 
+   <if test="account.name!=null &amp;&amp; account.name!=''">
+   		and name = #{account.name, jdbcType=VARCHAR}
+   </if>
+  	order by sort asc
+  </select>
+  
+    <!-- 根据parentid获得报销子科目 -->
+  <select id="selectChildsByParentId" resultMap="BaseResultMap" parameterType="com.zcs.account.domain.Account">
+  	    select * from  t_account a where a.sort like '#{account.sort, jdbcType=VARCHAR})%'
+   <if test="account.companyId!=null &amp;&amp; account.companyId!=''">
+   		and a.companyId = #{account.companyId, jdbcType=VARCHAR}
+   </if>
+   <if test="account.parentid!=null &amp;&amp; account.parentid!=''">
+   		and a.parentid != #{account.parentid, jdbcType=VARCHAR}
+   </if>
+  	order by sort asc
+  </select>
+  
+  <!-- 根据ID删除报销科目 -->
+  <delete id="deleteAccountByIds">
+ 	 delete from t_account  where id in
+		<foreach item="id" collection="ids" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+  </delete>
+  
+  <!-- 分页列表 -->
+  <select id="selectAllAccountsByPage" resultType="com.zcs.account.domain.Account">
+  	select tal.name as parentName,ta.*
+  	from t_account  ta  
+  	left join t_account tal on ta.parentid = tal.id
+  	where 1=1
+  	<if test="account.name !=null &amp;&amp; account.name !='' ">
+		and ta.name like
+		concat('%',#{account.name,jdbcType=VARCHAR},'%') 
+	</if>
+	<if test="account.code !=null &amp;&amp; account.code !='' ">
+		and ta.code like
+		concat('%',#{account.code,jdbcType=VARCHAR},'%') 
+	</if>
+	<if test="account.companyId!=null &amp;&amp; account.companyId!=''">
+   		and ta.companyId = #{account.companyId, jdbcType=VARCHAR}
+    </if>
+
+  </select>
+  
+</mapper>

@@ -1,0 +1,50 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+
+// JDK1.7
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+group 'com.zcs'
+version '2.0'
+def artifactId = 'xiaoshuang-common'
+
+
+dependencies {
+  	compile (
+	"org.springframework:spring-aspects:4.2.0.RELEASE",
+  	"org.springframework:spring-context:4.2.0.RELEASE",
+  	"commons-io:commons-io:2.2",
+  	"commons-codec:commons-codec:1.10",
+	"javax.servlet:javax.servlet-api:3.1.0",
+	"org.springframework:spring-web:4.2.0.RELEASE",
+	"org.jasig.cas.client:cas-client-core:3.4.1",
+	"org.springframework.data:spring-data-redis:1.4.2.RELEASE",
+	'org.apache.poi:poi:3.13',
+  	'org.apache.poi:poi-examples:3.13',
+  	'org.apache.poi:poi-excelant:3.13',
+  	'org.apache.poi:poi-ooxml:3.13',
+  	'org.apache.poi:poi-ooxml-schemas:3.13',
+  	'org.apache.poi:poi-scratchpad:3.13',
+  	"javax.servlet.jsp:javax.servlet.jsp:2.0.0",
+	"javax.websocket:javax.websocket-api:1.1",
+	"org.springframework:spring-webmvc:4.2.0.RELEASE",
+	"org.freemarker:freemarker:2.3.23",
+	"org.apache.httpcomponents:httpclient:4.2.5",
+	"org.apache.httpcomponents:httpclient-cache:4.2.5",
+	"org.apache.httpcomponents:httpcore:4.2.4",
+	"org.apache.httpcomponents:httpmime:4.2.5",	
+	"commons-beanutils:commons-beanutils:1.9.2"
+  	)
+    compile "net.sourceforge.htmlcleaner:htmlcleaner:2.2"
+  	compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
+  	compile project(':xiaoshuang-api')
+}
+
+jar {
+    manifest.attributes provider: 'cunshuangzhou Hefei Anhui'
+    manifest.attributes version: "1.0"
+   // manifest.attributes build_jdk: "${targetCompatibility}"
+}
+    

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context.xsd">
+	<!-- Redis缓存配置文件 -->
+	<import resource="classpath*:rediscache.xml"/>
+	 
+	<!-- druid 数据源 -->
+	<import resource="classpath*:druid.xml" />
+	<!-- /druid 数据源 -->
+	
+ 	<bean id="druid-stat-interceptor"
+    	class="com.alibaba.druid.support.spring.stat.DruidStatInterceptor">
+  	</bean>
+	<bean id="druid-stat-pointcut" class="org.springframework.aop.support.JdkRegexpMethodPointcut"
+    	scope="prototype">
+	    <property name="patterns">
+	        <list>
+	            <value>com.zcs.*.*.service.*Imp*.*</value>
+	            <value>com.zcs.*.*.dao.*Mapper.*</value>
+	        </list>
+	    </property>
+	</bean>
+	<aop:config>
+	    <aop:advisor advice-ref="druid-stat-interceptor"
+	        pointcut-ref="druid-stat-pointcut" />
+	</aop:config>
+
+	<!-- 使用JDBC事物 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- AOP配置事物 -->
+	<tx:advice id="transactionAdvice" transaction-manager="transactionManager">
+		<tx:attributes> 
+			<tx:method name="query*" read-only="true" propagation="REQUIRED" />
+			<tx:method name="delete*" propagation="REQUIRED" /> 
+			<tx:method name="update*" propagation="REQUIRED" /> 
+ 			<tx:method name="insert*" propagation="REQUIRED" /> 
+ 			<tx:method name="*" propagation="REQUIRED"/> 
+ 		</tx:attributes> 
+ 	</tx:advice> 
+
+	<!-- 配置AOP切面 -->
+	<aop:config> 
+ 		<aop:pointcut id="transactionPointcut"
+ 			expression="execution(* com.zcs..service.*Imp*.*(..))" /> 
+		<aop:advisor pointcut-ref="transactionPointcut"
+			advice-ref="transactionAdvice" /> 
+ 	</aop:config> 
+	
+	<!-- 使用annotation注解方式配置事务 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:mybatis-config.xml"></property>
+		<property name="mapperLocations" value="classpath*:com/zcs/**/**/mappers/${jdbc.databasetype}/*Mapper.xml"></property>
+		<property name="plugins">
+			<array>
+				<bean id="pageHelper" class="com.github.pagehelper.PageHelper">
+					<property name="properties">
+					    <!--注意 方言全部使用小写字母 -->
+					    <!--mysql, mariadb, sqlite, oracle, hsqldb, postgresql, sqlserver, db2, informix -->
+						<value>
+							dialect=${jdbc.databasetype}
+						</value>
+					</property>
+				</bean>
+			</array>
+		</property>
+	</bean>
+	<!-- 扫描接口作为mapper代理 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.zcs.**.**.dao" />
+		<!-- 凡是继承MybatisMapper的接口均被视为mapper代理 
+			需要注意代理接口的完整className需要和mapper文件中的nameSpace一致
+			methodName需要和mapper文件中的 statementId一致-->
+		<property name="markerInterface" value="com.zcs.MybatisMapper" />
+	</bean>
+</beans>

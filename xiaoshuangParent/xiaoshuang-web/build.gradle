@@ -1,0 +1,173 @@
+buildscript {
+  	repositories {
+  		maven { 
+  			url 'http://maven.aliyun.com/nexus/content/repositories/central/'
+  		}
+  		jcenter()
+  	}
+  	dependencies {
+  		
+  	}
+}
+
+apply plugin: "java"
+apply plugin: "war"
+apply plugin: "eclipse"
+apply plugin: 'eclipse-wtp'
+
+def env = "mysqldev"
+
+group 'com.zcs'
+version '2.0'
+def artifactId = 'xiaoshuang-web'
+war.baseName = "xiaoshuang"
+
+def smackVersion = "4.1.8"
+
+project.webAppDirName = "src/main/webapp"
+
+// JDk1.7
+sourceCompatibility = 1.7
+
+configurations {
+  	provided
+}
+
+sourceSets {
+  	main{
+    	resources.srcDirs = ["src/main/java", "src/main/resources/common", "src/main/resources/$env"]	//������Դ�ļ������ʱ�ŻὫ�����ļ�ֲ��war�ļ�
+  	}
+  	main.compileClasspath += configurations.provided
+  	test.compileClasspath += configurations.provided
+  	test.runtimeClasspath += configurations.provided
+}
+
+dependencies {
+ 	compile (
+	 	'net.sourceforge.htmlcleaner:htmlcleaner:2.2',
+	 	"org.springframework:spring-webmvc:5.0.2.RELEASE",
+		"org.springframework:spring-context:5.0.2.RELEASE",
+		"org.springframework:spring-beans:4.2.5.RELEASE",
+		"org.springframework:spring-aspects:5.0.2.RELEASE",
+		"org.springframework:spring-jdbc:5.0.2.RELEASE",
+		"org.springframework:spring-context-support:5.0.2.RELEASE",
+		"org.springframework.data:spring-data-redis:1.4.2.RELEASE",
+		"org.apache.shiro:shiro-spring:1.4.0",
+		"org.apache.shiro:shiro-cas:$shiroVersion",
+		'javax.websocket:javax.websocket-api:1.1',
+		"jstl:jstl:1.2",
+		"joda-time:joda-time:2.7",
+		"commons-fileupload:commons-fileupload:1.3.1",
+		"org.freemarker:freemarker:2.3.23",
+		"org.apache.logging.log4j:log4j-web:2.5",
+		"com.zaxxer:HikariCP:2.4.1",
+		"org.mybatis:mybatis-spring:1.3.0",
+		"mysql:mysql-connector-java:5.1.38",
+		'commons-codec:commons-codec:1.10',
+		"com.alibaba:druid:1.0.18",
+		"redis.clients:jedis:2.6.2",
+		"org.quartz-scheduler:quartz:2.2.1",
+		"org.json:json:20140107",
+		"org.apache.httpcomponents:httpclient:4.2.5",
+	  	"org.apache.httpcomponents:httpclient-cache:4.2.5",
+	 	"org.apache.httpcomponents:httpcore:4.2.4",
+	  	"org.apache.httpcomponents:httpmime:4.2.5",
+	  	"cn.jpush.api:jpush-client:3.2.9",
+	  	'org.apache.poi:poi:3.13',
+	  	'org.apache.poi:poi-examples:3.13',
+	  	'org.apache.poi:poi-excelant:3.13',
+	  	'org.apache.poi:poi-ooxml:3.13',
+	  	'org.apache.poi:poi-ooxml-schemas:3.13',
+	  	'org.apache.poi:poi-scratchpad:3.13',
+	  	'com.github.virtuald:curvesapi:1.03',
+	  	'org.apache.xmlbeans:xmlbeans:2.6.0',
+	  	"cglib:cglib:3.2.0",
+	  	"cn.featherfly:bccs-api:3.0.1",
+	  	"commons-net:commons-net:3.3+",
+	  	"io.springfox:springfox-swagger2:2.6.1",
+	  	"io.springfox:springfox-swagger-ui:2.6.1",
+	  	"org.activiti:activiti-engine:5.22.0",
+	  	"org.activiti:activiti-spring:5.22.0",
+	  	"org.activiti:activiti-modeler:5.22.0",
+	  	"org.activiti:activiti-diagram-rest:5.22.0"
+	  	
+ 	)
+ 	//im
+ 	compile (
+ 		// Smack
+	  	"org.igniterealtime.smack:smack-bosh:$smackVersion",
+	  	"org.igniterealtime.smack:smack-compression-jzlib:$smackVersion",
+	  	"org.igniterealtime.smack:smack-core:$smackVersion",
+	  	"org.igniterealtime.smack:smack-debug:$smackVersion",
+	  	"org.igniterealtime.smack:smack-debug-slf4j:$smackVersion",
+	  	"org.igniterealtime.smack:smack-experimental:$smackVersion",
+	  	"org.igniterealtime.smack:smack-extensions:$smackVersion",
+	  	"org.igniterealtime.smack:smack-im:$smackVersion",
+	  	"org.igniterealtime.smack:smack-java7:$smackVersion",
+	  	"org.igniterealtime.smack:smack-jingle-old:$smackVersion",
+	  	"org.igniterealtime.smack:smack-legacy:$smackVersion",
+	  	"org.igniterealtime.smack:smack-resolver-dnsjava:$smackVersion",
+	  	"org.igniterealtime.smack:smack-resolver-javax:$smackVersion",
+	  	"org.igniterealtime.smack:smack-resolver-minidns:$smackVersion",
+	  	"org.igniterealtime.smack:smack-sasl-javax:$smackVersion",
+	  	"org.igniterealtime.smack:smack-sasl-provided:$smackVersion",
+	  	"org.igniterealtime.smack:smack-tcp:$smackVersion"
+	)
+ 	compile ("com.alibaba:dubbo:$dubboVersion"){
+	    exclude group: 'org.springframework', module: 'spring'
+	    exclude group: 'org.javassist', module: 'javassist'
+    }
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
+    compile "org.javassist:javassist:3.20.0-GA"
+	compile("org.apache.zookeeper:zookeeper:3.4.6"){
+		exclude module:"org.slf4j:slf4j-log4j12"
+		exclude group:'org.slf4j', module:'slf4j'
+		exclude group:'org.slf4j', module:'slf4j-log4j12'
+		exclude group:'log4j', module:'log4j'
+	}   
+	compile("com.github.sgroschupf:zkclient:0.1"){
+		exclude group: 'log4j', module: 'log4j'
+	}
+	compile group: 'org.freemarker', name: 'freemarker', version: '2.3.23'
+    compile group: 'org.dom4j', name: 'dom4j', version: '2.0.0'
+    compile project(':xiaoshuang-api')
+    compile project(':xiaoshuang-common')
+    compile project(':xiaoshuang-service')
+    // video screen shots needed
+	compile group: 'org.bytedeco.javacpp-presets', name: 'ffmpeg-platform', version: '3.2.1-1.3'
+    compile group: 'org.bytedeco', name: 'javacv', version: '1.3'
+    
+    
+    testCompile group: 'junit', name: 'junit', version: '4.9'
+	testCompile "org.springframework:spring-test:$springVersion"
+	testCompile "javax.servlet.jsp:javax.servlet.jsp:2.0.0"
+    
+}
+
+jar {
+    manifest.attributes provider: 'xiaoshuang Hefei Anhui'
+    manifest.attributes version: "${version}"
+    manifest.attributes build_jdk: "${targetCompatibility}"
+}
+
+task copyxml(type:Copy){
+	from 'src/main/resources'
+	into 'build/classes/main/'
+	exclude '**/*.java';
+}
+
+task copyprop(type: Copy,dependsOn: copyxml){
+	from 'src/main/java/com/zcs'
+	into 'build/classes/main/com/zcs'
+	exclude '**/*.java';
+}
+	
+//war.dependsOn test
+//compileJava.dependsOn copyprop
+//copyprop.dependsOn clean
+	
+eclipse.classpath.plusConfigurations += [configurations.provided]
+tasks.withType(JavaCompile) {  
+  	options.encoding = "UTF-8"  
+}
+

@@ -1,0 +1,51 @@
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+    apply plugin: 'maven'
+	sourceCompatibility = 1.7
+	targetCompatibility = 1.7
+	ext {
+	   	springVersion="4.2.0.RELEASE"
+	   	dubboVersion="2.5.3"
+	   	shiroVersion="1.2.4"
+	   	guavaVersion="19.0-rc3"
+	   	mybatisVersion="3.4.1"
+	}
+	[compileJava, javadoc, compileTestJava]*.options*.encoding = 'UTF-8'
+	repositories {
+	   	maven { url 'http://maven.aliyun.com/nexus/content/repositories/central/'}
+	   	maven { url 'http://maven.aliyun.com/nexus/content/repositories/oschina/'}
+	   	maven { url 'http://maven.aliyun.com/nexus/content/groups/public/'}
+	   	maven { url 'http://maven.aliyun.com/nexus/content/repositories/releases/'}
+	   	maven { url 'http://maven.aliyun.com/nexus/content/repositories/snapshots/'}
+	   	mavenCentral()
+	   	jcenter()
+	}
+    dependencies {
+	    compile (  	
+	    	"org.mybatis:mybatis:3.4.5",
+			"com.github.jsqlparser:jsqlparser:0.9.6",
+			"org.hibernate:hibernate-validator:5.2.2.Final",
+			"com.fasterxml.jackson.core:jackson-databind:2.5.1",
+			"org.codehaus.jackson:jackson-mapper-asl:1.9.13",
+		    "com.alibaba:fastjson:1.2.7",
+		    "commons-lang:commons-lang:2.6",
+		    "com.google.guava:guava:23.6-jre",
+		    "org.apache.logging.log4j:log4j-core:2.5",
+		    "org.apache.logging.log4j:log4j-api:2.5",
+		    "org.apache.logging.log4j:log4j-slf4j-impl:2.5",
+		    "com.belerweb:pinyin4j:2.5.0",
+		    "log4j:log4j:1.2.16",
+			)
+			compile("com.github.pagehelper:pagehelper:4.1.6"){
+				exclude group: 'com.github.jsqlparser', module: 'jsqlparser'
+			}
+    }
+	task sourcesJar(type: Jar, dependsOn: classes) {
+	    classifier = 'sources'
+	    from sourceSets.main.allSource
+	}
+	artifacts {
+	    archives sourcesJar
+	}
+}

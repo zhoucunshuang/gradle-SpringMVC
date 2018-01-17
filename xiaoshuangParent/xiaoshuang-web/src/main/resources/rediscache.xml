@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <beans
+    xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context" 
+     xmlns:c='http://www.springframework.org/schema/c'
+     xmlns:p='http://www.springframework.org/schema/p'
+     xmlns:cache='http://www.springframework.org/schema/cache'
+     xsi:schemaLocation='http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+     	http://www.springframework.org/schema/cache
+     	http://www.springframework.org/schema/cache/spring-cache.xsd
+     	http://www.springframework.org/schema/context 
+	  	http://www.springframework.org/schema/context/spring-context.xsd'>
+	<!-- 启用缓存 -->
+	<cache:annotation-driven cache-manager="cacheManager"/>
+
+	<bean id="redispoolconfig" 
+		class="redis.clients.jedis.JedisPoolConfig"
+		p:blockWhenExhausted="${redis.blockWhenExhausted}"
+		p:jmxEnabled="${redis.jmxEnabled}"
+		p:jmxNamePrefix="${redis.jmxNamePrefix}"
+		p:lifo="${redis.lifo}"
+		p:maxIdle="${redis.maxIdle}"
+		p:maxWaitMillis="${redis.maxWaitMillis}"
+		p:minEvictableIdleTimeMillis="${redis.minEvictableIdleTimeMillis}"
+		p:minIdle="${redis.minIdle}"
+		p:numTestsPerEvictionRun="${redis.numTestsPerEvictionRun}"
+		p:testOnBorrow="${redis.testOnBorrow}"
+		p:testOnReturn="${redis.testOnReturn}"
+		p:testWhileIdle="${redis.testWhileIdle}"
+		p:timeBetweenEvictionRunsMillis="${redis.timeBetweenEvictionRunsMillis}"
+	/>
+    <!-- Jedis ConnectionFactory -->
+     <bean
+         id="jedisConnectionFactory"
+         class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+         p:host-name="${redis.hostname}"
+         p:port="${redis.port}"
+         p:database="${redis.database}"
+         p:poolConfig-ref="redispoolconfig"
+         p:use-pool="${redis.usepool}">
+         </bean>
+
+    <!-- redis template definition -->
+     <bean
+         id="redisTemplate"
+         class="org.springframework.data.redis.core.RedisTemplate"
+         p:connection-factory-ref="jedisConnectionFactory">
+         <property name="keySerializer">
+        <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+    	</property>
+    	<property name="hashKeySerializer">
+        <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+   		 </property>
+         </bean>
+    <!-- string redis template definition -->
+     <bean
+         id="stringRedisTemplate"
+         class="org.springframework.data.redis.core.StringRedisTemplate"
+         p:connection-factory-ref="jedisConnectionFactory">
+         </bean>
+
+    <!-- declare Redis Cache Manager -->
+     <bean
+         id="cacheManager"
+         class="org.springframework.data.redis.cache.RedisCacheManager"
+         c:template-ref="redisTemplate"/>
+</beans>
